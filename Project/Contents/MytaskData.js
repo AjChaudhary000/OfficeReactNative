@@ -1,0 +1,23 @@
+export default [
+    {
+        id:'001',
+        DealerName:'Aj',
+        DealerCode:'GUT678',
+        DealerLocation:'Surat',
+        RouteName:'ABC'
+    },
+    {
+        id:'002',
+        DealerName:'LX',
+        DealerCode:'GFD543',
+        DealerLocation:'Pune',
+        RouteName:'ABC'
+    },
+    {
+        id:'003',
+        DealerName:'Ac',
+        DealerCode:'TUT678',
+        DealerLocation:'Surat',
+        RouteName:'ABC'
+    }
+];
