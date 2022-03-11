@@ -3,6 +3,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import { getAllTask } from '../Redux/TaskSlice'
 const HomeScreen = (props) => {
+  console.log(props.AllTask)
   return (
     <View style={{flex:1,justifyContent:'center',alignItems:"center"}}>
       
