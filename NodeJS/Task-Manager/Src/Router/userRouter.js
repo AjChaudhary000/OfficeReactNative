@@ -10,6 +10,14 @@ router.post('/user', async (req, res) => {
         res.status(400).send(e)
     }
 });
+router.post('/user/login', async (req, res) => {
+    try {
+        const user = await User.findByCredentials(req.body.email, req.body.password);
+        res.send(user)
+    } catch (e) {
+        res.status(400).send(e.toString());
+    }
+})
 router.get('/user', async (req, res) => {
     try {
         const users = await User.find();
