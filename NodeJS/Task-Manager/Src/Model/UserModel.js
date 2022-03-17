@@ -73,5 +73,10 @@ userSchema.methods.toJSON = function () {
     delete userObject.tokens
     return userObject;
 }
+userSchema.virtual('Task', {
+    ref: 'Task',
+    localField: '_id',
+    foreignField: 'owner'
+})
 const User = mongoose.model('User', userSchema);
 module.exports = User;
