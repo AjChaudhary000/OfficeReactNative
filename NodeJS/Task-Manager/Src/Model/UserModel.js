@@ -73,7 +73,7 @@ userSchema.methods.toJSON = function () {
     delete userObject.tokens
     return userObject;
 }
-userSchema.virtual('Task', {
+userSchema.virtual('tasks', {
     ref: 'Task',
     localField: '_id',
     foreignField: 'owner'

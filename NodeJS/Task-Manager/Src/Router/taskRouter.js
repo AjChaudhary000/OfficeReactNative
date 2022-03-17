@@ -13,13 +13,14 @@ router.post('/task', auth, async (req, res) => {
     }
 
 })
-router.get('/task', auth, (req, res) => {
-    Task.find({ owner: req.user._id }).then((task) => {
-        if (!task) return res.status(404).send("Task Data Not Found ..");
-        res.json(task)
-    }).catch((e) => {
-        res.status(500).send(e)
-    })
+router.get('/task', auth, async (req, res) => {
+    try {
+        await req.user.populate('tasks');
+        console.log(req.user)
+        res.send(req.user.tasks)
+    } catch (e) {
+        res.status(400).send(e);
+    }
 })
 router.get('/task/:id', auth, (req, res) => {
     const _id = req.params.id
