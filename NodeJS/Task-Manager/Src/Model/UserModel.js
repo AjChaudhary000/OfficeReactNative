@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const validator = require('validator')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const Task = require('./TaskModel');
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -42,17 +43,22 @@ userSchema.pre('save', async function (next) {
 })
 userSchema.pre('findOneAndUpdate', async function (next) {
     const user = this.getUpdate();
+    console.log("my")
     if (user.password) {
         user.password = await bcrypt.hash(user.password, 8)
     }
     next()
 })
+userSchema.pre('deleteOne', async function (next) {
+    const owner = this.getFilter()["_id"];
+    console.log("my data", owner)
+    const task = await Task.deleteMany({ owner: owner });
+
+    next()
+})
 userSchema.methods.genrateAuthToken = async function () {
     const user = this;
-    console.log(user)
     const token = await jwt.sign({ _id: user._id.toString() }, "MyTokenApp");
-    console.log("token:-= ", token);
-
     user.tokens = user.tokens.concat({ token });
 
     await user.save();
