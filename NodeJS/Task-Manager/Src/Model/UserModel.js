@@ -32,8 +32,11 @@ const userSchema = new mongoose.Schema({
                 required: true
             }
         }
-    ]
-})
+    ],
+    avatar: {
+        type: String
+    }
+}, { timestamps: true })
 userSchema.pre('save', async function (next) {
     const user = this;
     if (user.isModified('password')) {
@@ -53,7 +56,6 @@ userSchema.pre('deleteOne', async function (next) {
     const owner = this.getFilter()["_id"];
     console.log("my data", owner)
     const task = await Task.deleteMany({ owner: owner });
-
     next()
 })
 userSchema.methods.genrateAuthToken = async function () {

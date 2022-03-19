@@ -14,8 +14,20 @@ router.post('/task', auth, async (req, res) => {
 
 })
 router.get('/task', auth, async (req, res) => {
+    const match = {};
+    if (req.query.desc) match.desc = { $regex: req.query.desc }
+
     try {
-        await req.user.populate('tasks');
+        await req.user.populate({
+            path: 'tasks', match,
+            options: {
+                limit: parseInt(req.query.limit),
+                skip: parseInt(req.query.skip),
+                sort: {
+                    createdAt: -1
+                }
+            }
+        });
         console.log(req.user)
         res.send(req.user.tasks)
     } catch (e) {

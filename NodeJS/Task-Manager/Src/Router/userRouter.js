@@ -1,7 +1,11 @@
 const express = require('express');
+const multer = require('multer');
 const auth = require('../MiddleWare/auth');
 const User = require('../Model/UserModel');
 const router = new express.Router();
+const path = require('path')
+const sharp = require('sharp')
+const fs = require('fs')
 router.post('/user', async (req, res) => {
     const UserData = new User(req.body);
     try {
@@ -51,6 +55,52 @@ router.get('/user', async (req, res) => {
 router.get('/user/me', auth, async (req, res) => {
     res.send(req.user);
 })
+
+const disk = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "./images/avatars")
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = "avt" + Date.now() + "A" + Math.round(Math.random() * 1000);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    },
+})
+const upload = multer({
+    storage: disk,
+    limits: {
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        if (!file.originalname.match(/\.(png|jpeg|jpg)$/)) {
+            return cb(new Error('Please Upload an  Image '))
+        }
+        cb(undefined, true)
+    }
+})
+router.post('/user/me/avatar', auth, upload.single('avatar'), async (req, res) => {
+    if (req.user.avatar) {
+        fs.unlinkSync(`./images/avatars/${req.user.avatar}`);
+    }
+    req.user.avatar = req.file.filename;
+    const data = await req.user.save();
+    res.send(data)
+
+}, (error, req, res, next) => { res.send(error.message) })
+router.delete('/user/me/avatar', auth, async (req, res) => {
+    try {
+        const data = await User.findById(req.user._id)
+        if (!data) throw new Error("Image Not Found");
+
+        fs.unlinkSync(`./images/avatars/${data.avatar}`);
+        req.user.avatar = ""
+        await req.user.save();
+        res.send()
+    }
+    catch (e) {
+        res.send(e)
+    }
+
+}, (error, req, res, next) => { res.send(error.message) })
 router.get('/user/:id', async (req, res) => {
     const _id = req.params.id
     try {
